@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUBT CSE Section 5 - Portal</title>
+    <!-- Google Fonts & FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #060913 0%, #0b111e 100%);
+            --panel-bg: rgba(17, 24, 39, 0.65);
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #22c55e;
+            --accent-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glow: rgba(168, 85, 247, 0.45);
+            --error-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ==========================================================================
+           ADVANCED CYBERPUNK ANIMATIONS (KEYFRAMES)
+           ========================================================================== */
+        
+        /* Floating background elements */
+        @keyframes floatOrbOne {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(40px, -60px) scale(1.15); }
+            66% { transform: translate(-30px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        @keyframes floatOrbTwo {
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(-50px, 50px) scale(1.2); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        /* Continuous scanline/beam overlay effect */
+        @keyframes holographicScan {
+            0% { top: -150%; }
+            50% { top: 150%; }
+            100% { top: 150%; }
+        }
+
+        /* Smooth micro-stagger for dashboard loading */
+        @keyframes modernEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Soft neon pulsing for premium modules */
+        @keyframes goldPulse {
+            0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.2); }
+            70% { box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+        }
+
+        /* Dynamic Background Orbs with Fluid Motion */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            animation: floatOrbOne 15s infinite ease-in-out;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -5%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            animation: floatOrbTwo 12s infinite ease-in-out;
+        }
+
+        /* View States Control */
+        .view-section {
+            display: none;
+            width: 100%;
+            opacity: 0;
+        }
+
+        .view-section.active-view {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ==========================================================================
+           LOGIN SCREEN STYLES
+           ========================================================================== */
+        #login-view {
+            padding: 2rem 1rem;
+            margin: auto 0;
+            animation: modernEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .login-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* Scanning laser effect on login card */
+        .login-card::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, rgba(56, 189, 248, 0.08), transparent);
+            left: 0;
+            animation: holographicScan 4s infinite linear;
+            pointer-events: none;
+        }
+
+        .login-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 25px 60px rgba(56, 189, 248, 0.06);
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.3rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .brand-sub {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            margin-bottom: 0.6rem;
+            padding-left: 0.2rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(8, 12, 21, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.1rem 1.2rem 1.1rem 3rem;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-purple);
+            background: rgba(8, 12, 21, 0.9);
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.2);
+        }
+
+        .form-control:focus + i {
+            color: var(--accent-purple);
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+            padding-left: 0.2rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border: none;
+            padding: 1.1rem;
+            border-radius: 14px;
+            color: #060913;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.45);
+            filter: brightness(1.15);
+        }
+
+        .gate-note {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .gate-note span {
+            color: var(--accent-blue);
+        }
+
+        /* ==========================================================================
+           PORTAL DASHBOARD STYLES
+           ========================================================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+
+        #portal-view.active-view .container {
+            animation: modernEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid var(--accent-purple);
+            padding: 0.3rem 1.2rem;
+            border-radius: 20px;
+            color: var(--accent-purple);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+            margin-bottom: 4rem;
+        }
+
+        .course-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            padding: 1.75rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Matrix scan line for modules */
+        .course-card::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.04), transparent);
+            left: 0;
+            animation: holographicScan 6s infinite linear;
+            pointer-events: none;
+        }
+
+        .course-card.cr-card::after {
+            background: linear-gradient(to bottom, transparent, rgba(251, 191, 36, 0.05), transparent);
+        }
+
+        .course-card.cr-card::before {
+            background: linear-gradient(to right, var(--accent-gold), #f97316) !important;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: var(--border-glow);
+            box-shadow: 0 15px 45px rgba(168, 85, 247, 0.12);
+        }
+
+        .course-card.cr-card {
+            animation: goldPulse 3s infinite;
+        }
+
+        .course-card.cr-card:hover {
+            border-color: rgba(251, 191, 36, 0.5);
+            box-shadow: 0 15px 45px rgba(251, 191, 36, 0.12);
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .course-code {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 1px;
+        }
+
+        .cr-card .course-code {
+            color: var(--accent-gold);
+        }
+
+        .course-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 0.85rem 1.5rem;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .view-btn i {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--accent-blue);
+        }
+
+        .cr-card .view-btn i {
+            color: var(--accent-gold);
+        }
+
+        .course-card.active .view-btn {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-color: transparent;
+            color: #060913;
+        }
+
+        .course-card.cr-card.active .view-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #f97316);
+            border-color: transparent;
+            color: #060913;
+        }
+
+        .course-card.active .view-btn i {
+            transform: rotate(180deg);
+            color: #060913;
+        }
+
+        /* Smooth Expanding Dashboard Panel */
+        .faculty-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, margin-top 0.4s ease;
+            background: rgba(6, 9, 19, 0.8);
+            border-radius: 16px;
+            margin-top: 0;
+            opacity: 0;
+        }
+
+        .course-card.active .faculty-panel {
+            max-height: 500px;
+            margin-top: 1.2rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 1;
+        }
+
+        .faculty-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .faculty-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e1b4b, #2e1065);
+            border: 2px solid var(--accent-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+            transition: transform 0.3s ease;
+        }
+
+        .course-card:hover .faculty-avatar {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .cr-card .faculty-avatar {
+            background: linear-gradient(135deg, #451a03, #78350f);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .faculty-meta h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.15rem;
+        }
+
+        .faculty-meta p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .faculty-details {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.9rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-blue);
+        }
+
+        .cr-card .detail-label {
+            color: var(--accent-gold);
+        }
+
+        .detail-content {
+            color: var(--text-main);
+        }
+
+        .detail-item.whatsapp .detail-label {
+            color: var(--accent-green) !important;
+        }
+
+        .detail-item a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s, padding-left 0.2s ease;
+        }
+
+        .detail-item a:hover {
+            color: var(--accent-purple);
+            padding-left: 4px;
+        }
+
+        .cr-card .detail-item a:hover {
+            color: var(--accent-gold);
+        }
+
+        .class-code-box {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px dashed rgba(56, 189, 248, 0.3);
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-family: monospace;
+            color: var(--accent-blue);
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-top: 0.15rem;
+        }
+
+        .pending-status {
+            font-style: italic;
+            color: #ef4444;
+            font-size: 0.85rem;
+        }
+
+        .cr-divider {
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            margin: 1.2rem 0;
+            padding-top: 1.2rem;
+        }
+
+        /* ==========================================================================
+           EYE-CATCHING CYBER FOOTER STYLES
+           ========================================================================== */
+        footer {
+            background: linear-gradient(180deg, rgba(9, 13, 24, 0.7) 0%, rgba(5, 7, 13, 0.95) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+            padding: 2rem 1.5rem;
+            position: relative;
+            box-shadow: 0 -10px 30px rgba(6, 9, 19, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-purple), transparent);
+            box-shadow: 0 0 15px var(--accent-purple);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .footer-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .footer-brand span {
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-contact i {
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+            animation: pulse-ring 2s infinite;
+        }
+
+        .footer-contact span {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .footer-contact:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .footer-dev {
+            width: 100%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.2rem;
+        }
+
+        .dev-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .dev-highlight {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-blue) 70%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); color: var(--accent-purple); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .logo-text { font-size: 2rem; }
+            .course-grid { grid-template-columns: 1fr; }
+            .footer-top { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       VIEW 1: AUTHENTICATION ENTRANCE
+       ========================================================================== -->
+    <div id="login-view" class="view-section active-view">
+        <div class="login-card">
+            <div class="brand-logo">NEXUS GATE</div>
+            <div class="brand-sub">BUBT CSE Section 5 Authentication</div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="studentId">Authorized Student ID</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="studentId" 
+                            class="form-control" 
+                            placeholder="Enter your ID card number" 
+                            autocomplete="off"
+                            required
+                        >
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div id="errorBox" class="error-message">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Unauthorized Access or Invalid ID!
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>ACCESS PORTAL</span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                </button>
+            </form>
+
+            <p class="gate-note">Secure node access restricted to verified <span>Section 5</span> credentials.</p>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+       VIEW 2: SECURE PORTAL DASHBOARD
+       ========================================================================== -->
+    <div id="portal-view" class="view-section">
+        <div class="container">
+            <header>
+                <h1 class="logo-text">BUBT NEXUS</h1>
+                <p class="subtitle">Department of Computer Science & Engineering</p>
+                <span class="section-badge"><i class="fa-solid fa-code-branch"></i> Section 5 Portal</span>
+            </header>
+
+            <main class="course-grid">
+                
+                <!-- CR INFORMATION CARD -->
+                <div class="course-card cr-card" id="card-cr-info">
+                    <div class="course-info">
+                        <span class="course-code">MANAGEMENT</span>
+                        <h3 class="course-title">CR Information Nexus</h3>
+                    </div>
+                    <button class="view-btn" onclick="toggleFaculty('card-cr-info')">
+                        <span>View CR Details</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="faculty-panel">
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">CR 1</div>
+                            <div class="faculty-meta">
+                                <h4>Pending</h4>
+                                <p>Role: <strong>Lead Coordinator</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Contact</span>
+                                <span class="detail-content">
+                                    <a href="Pending" target="_blank">01540185272 (Click to Chat)</a>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Student ID</span>
+                                <span class="detail-content">Pending</span>
+                            </div>
+                        </div>
+
+                        <div class="cr-divider"></div>
+                        
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">CR 2</div>
+                            <div class="faculty-meta">
+                                <h4>Co-CR Name</h4>
+                                <p>Role: <strong>Assistant Coordinator</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Contact</span>
+                                <span class="detail-content pending-status">Pending Setup</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSE 101 & 102 -->
+                <div class="course-card" id="card-cse101">
+                    <div class="course-info">
+                        <span class="course-code">CSE 101 & CSE 102</span>
+                        <h3 class="course-title">Computer Fundamentals</h3>
+                    </div>
+                    <button class="view-btn" onclick="toggleFaculty('card-cse101')">
+                        <span>View Faculty Info</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="faculty-panel">
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">MSDD</div>
+                            <div class="faculty-meta">
+                                <h4>Md. Sadman Sakib</h4>
+                                <p>Faculty Code: <strong>MSDD</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Number</span>
+                                <span class="detail-content">
+                                    <a href="https://wa.me/8801521470433" target="_blank">01521470433 (Click to Chat)</a>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Counseling Room</span>
+                                <span class="detail-content">Building 3; Room: 903</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Google Classroom Code</span>
+                                <span class="detail-content"><span class="class-code-box">gmlrnkgx</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ENG 101 -->
+                <div class="course-card" id="card-eng101">
+                    <div class="course-info">
+                        <span class="course-code">ENG 101</span>
+                        <h3 class="course-title">English Foundation Course</h3>
+                    </div>
+                    <button class="view-btn" onclick="toggleFaculty('card-eng101')">
+                        <span>View Faculty Info</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="faculty-panel">
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">TAAH</div>
+                            <div class="faculty-meta">
+                                <h4>Tasnin Ahmed</h4>
+                                <p>Faculty Code: <strong>TAAH</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Number</span>
+                                <span class="detail-content">
+                                    <a href="https://wa.me/8801998420078" target="_blank">01998420078 (Click to Chat)</a>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Counseling Room</span>
+                                <span class="detail-content">Building 3; Room: 708</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Google Classroom Code</span>
+                                <span class="detail-content"><span class="class-code-box">ifdjlmmh</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BHC 101 -->
+                <div class="course-card" id="card-bhc101">
+                    <div class="course-info">
+                        <span class="course-code">BHC 101</span>
+                        <h3 class="course-title">History of the Emergence of Independent Bangladesh</h3>
+                    </div>
+                    <button class="view-btn" onclick="toggleFaculty('card-bhc101')">
+                        <span>View Faculty Info</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="faculty-panel">
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">MARK</div>
+                            <div class="faculty-meta">
+                                <h4>Mariya Aziz Rokiya</h4>
+                                <p>Faculty Code: <strong>MARK</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Number</span>
+                                <span class="detail-content">
+                                    <a href="https://wa.me/8801534840693" target="_blank">01534840693 (Click to Chat)</a>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Counseling Room</span>
+                                <span class="detail-content">Tahmid Abdullah Building, MTA / 408 (Beside Library)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Google Classroom Code</span>
+                                <span class="detail-content"><span class="class-code-box">epvu6a7o</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAT 101 -->
+                <div class="course-card" id="card-mat101">
+                    <div class="course-info">
+                        <span class="course-code">MAT 101</span>
+                        <h3 class="course-title">Differential and Integral Calculus</h3>
+                    </div>
+                    <button class="view-btn" onclick="toggleFaculty('card-mat101')">
+                        <span>View Faculty Info</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="faculty-panel">
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">MHSA</div>
+                            <div class="faculty-meta">
+                                <h4>Halimatuj Sadia</h4>
+                                <p>Faculty Code: <strong>MHSA</strong></p>
+                            </div>
+                        </div>
+                        <div class="faculty-details">
+                            <div class="detail-item whatsapp">
+                                <span class="detail-label">WhatsApp Number</span>
+                                <span class="detail-content">
+                                    <a href="https://wa.me/8801303511257" target="_blank">01303511257 (Click to Chat)</a>
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Counseling Room</span>
+                                <span class="detail-content pending-status">Pending Update</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Google Classroom Code</span>
+                                <span class="detail-content"><span class="class-code-box">2p6zhoxz</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Production High-End Global Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-brand">&copy; <span>NEXUS</span> | All Rights Reserved</div>
+                <a href="https://wa.me/8801540185272" target="_blank" class="footer-contact">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>+880 1540-185272</span>
+                </a>
+            </div>
+            <div class="footer-dev">
+                <p class="dev-text">Designed and Developed by <span class="dev-highlight">Mahim ( CSE, BUBT ) 58 - 5</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+       STATE FLOW ARCHITECTURE SCRIPT
+       ========================================================================== -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('nexus_logged_in') === 'true') {
+                showView('portal-view');
+            } else {
+                showView('login-view');
+            }
+        });
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active-view');
+            });
+            const target = document.getElementById(viewId);
+            target.classList.add('active-view');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const inputId = document.getElementById('studentId').value.trim();
+            const errorBox = document.getElementById('errorBox');
+            
+            const idNum = Number(inputId);
+
+            if (!isNaN(idNum) && idNum >= 20262103160 && idNum <= 20262103205) {
+                errorBox.style.display = 'none';
+                sessionStorage.setItem('nexus_logged_in', 'true');
+                showView('portal-view');
+            } else {
+                errorBox.style.display = 'flex';
+                const inputField = document.getElementById('studentId');
+                inputField.style.borderColor = 'var(--error-red)';
+                inputField.focus();
+            }
+        }
+
+        document.getElementById('studentId').addEventListener('input', function() {
+            this.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            document.getElementById('errorBox').style.display = 'none';
+        });
+
+        function toggleFaculty(cardId) {
+            const card = document.getElementById(cardId);
+            document.querySelectorAll('.course-card').forEach(c => {
+                if(c.id !== cardId) c.classList.remove('active');
+            });
+            card.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
